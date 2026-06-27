@@ -24,50 +24,42 @@
 /* ── Versiyon — her deployment'ta artır ── */
 const CACHE_VERSION = 'v3.0.0';
 const CACHE_NAME    = `iban-pro-${CACHE_VERSION}`;
-const OFFLINE_URL   = '/offline.html';
+const OFFLINE_URL   = './index.html';
 
 /* ── App Shell: ilk kurulumda mutlaka cache'lenmesi gereken dosyalar ── */
 const PRECACHE_ASSETS = [
-  /* Sayfa çatısı */
-  '/',
-  '/index.html',
-  '/offline.html',
-
-  /* Stil & mantık */
-  '/styles.css',
-  '/model.js',
-  '/state.js',
-  '/app.js',
-  '/pwa-init.js',
+  /* Sayfa çatısı — tek dosyalı (inline CSS/JS) uygulama */
+  './',
+  './index.html',
 
   /* PWA meta */
-  '/manifest.json',
+  './manifest.json',
 
   /* İkonlar — Ana Ekran / Splash için zorunlu */
-  '/icons/favicon.ico',
-  '/icons/favicon-32x32.png',
-  '/icons/apple-touch-icon.png',
-  '/icons/icon-72x72.png',
-  '/icons/icon-96x96.png',
-  '/icons/icon-128x128.png',
-  '/icons/icon-144x144.png',
-  '/icons/icon-152x152.png',
-  '/icons/icon-180x180.png',
-  '/icons/icon-192x192.png',
-  '/icons/icon-256x256.png',
-  '/icons/icon-384x384.png',
-  '/icons/icon-512x512.png',
+  './icons/favicon.ico',
+  './icons/favicon-32x32.png',
+  './icons/apple-touch-icon.png',
+  './icons/icon-72x72.png',
+  './icons/icon-96x96.png',
+  './icons/icon-128x128.png',
+  './icons/icon-144x144.png',
+  './icons/icon-152x152.png',
+  './icons/icon-180x180.png',
+  './icons/icon-192x192.png',
+  './icons/icon-256x256.png',
+  './icons/icon-384x384.png',
+  './icons/icon-512x512.png',
 
   /* Splash Screens (iOS) */
-  '/icons/splash/splash-640x1136.png',
-  '/icons/splash/splash-750x1334.png',
-  '/icons/splash/splash-1242x2208.png',
-  '/icons/splash/splash-1125x2436.png',
-  '/icons/splash/splash-828x1792.png',
-  '/icons/splash/splash-1242x2688.png',
-  '/icons/splash/splash-1170x2532.png',
-  '/icons/splash/splash-1284x2778.png',
-  '/icons/splash/splash-2048x2732.png',
+  './icons/splash/splash-640x1136.png',
+  './icons/splash/splash-750x1334.png',
+  './icons/splash/splash-1242x2208.png',
+  './icons/splash/splash-1125x2436.png',
+  './icons/splash/splash-828x1792.png',
+  './icons/splash/splash-1242x2688.png',
+  './icons/splash/splash-1170x2532.png',
+  './icons/splash/splash-1284x2778.png',
+  './icons/splash/splash-2048x2732.png',
 ];
 
 /* ════════════════════════════════════════════
@@ -152,7 +144,7 @@ self.addEventListener('fetch', event => {
   }
 
   /* İkonlar & Splash → Cache First (uzun ömürlü) */
-  if (url.pathname.startsWith('/icons/')) {
+  if (url.pathname.includes('/icons/')) {
     event.respondWith(cacheFirst(req));
     return;
   }
@@ -230,13 +222,13 @@ async function handleNavigate(req) {
 
   /* Cache'ten index.html veya kök */
   const indexMatch =
-    await caches.match('/index.html') ||
-    await caches.match('/') ||
-    await caches.match(new Request('/index.html'));
+    await caches.match('./index.html') ||
+    await caches.match('./') ||
+    await caches.match(new Request('./index.html'));
 
   if (indexMatch) return indexMatch;
 
-  /* Son çare: Offline sayfası */
+  /* Son çare: Offline sayfası (index.html'in kendisi, SPA fallback) */
   return caches.match(OFFLINE_URL) ||
     new Response('<h1>Çevrimdışı</h1>', {
       status: 503,
@@ -267,12 +259,8 @@ async function offlineFallback(req) {
    App Shell URL kontrolü
    ──────────────────────────────────────────── */
 function isAppShell(pathname) {
-  const shell = [
-    '/', '/index.html', '/offline.html',
-    '/styles.css', '/model.js', '/state.js',
-    '/app.js', '/pwa-init.js', '/manifest.json',
-  ];
-  return shell.includes(pathname);
+  const shell = ['/', '/index.html', '/manifest.json'];
+  return shell.some(s => pathname === s || pathname.endsWith(s));
 }
 
 /* ════════════════════════════════════════════
@@ -318,8 +306,8 @@ self.addEventListener('push', event => {
 
   const options = {
     body   : payload.body   || 'Yeni bildirim',
-    icon   : '/icons/icon-192x192.png',
-    badge  : '/icons/icon-72x72.png',
+    icon   : './icons/icon-192x192.png',
+    badge  : './icons/icon-72x72.png',
     tag    : payload.tag    || 'iban-notification',
     data   : payload.data   || {},
     vibrate: [100, 50, 100],
@@ -337,7 +325,7 @@ self.addEventListener('push', event => {
 
 self.addEventListener('notificationclick', event => {
   event.notification.close();
-  const targetUrl = event.notification.data?.url || '/';
+  const targetUrl = event.notification.data?.url || './';
 
   event.waitUntil(
     self.clients
@@ -431,7 +419,7 @@ async function updateCacheInBackground() {
     const cache = await caches.open(CACHE_NAME);
     /* App shell'i arka planda tazele */
     await Promise.allSettled(
-      ['/', '/index.html', '/styles.css', '/model.js', '/state.js', '/app.js', '/pwa-init.js']
+      ['./', './index.html']
         .map(url =>
           fetch(new Request(url, { cache: 'reload' }))
             .then(r => { if (r.ok) cache.put(url, r); })
