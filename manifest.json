@@ -2,8 +2,8 @@
   "name": "IBAN Manager Pro",
   "short_name": "IBAN Pro",
   "description": "IBAN hesaplarınızı kolayca yönetin, kopyalayın ve paylaşın.",
-  "start_url": "/index.html?utm_source=homescreen",
-  "scope": "/",
+  "start_url": "./index.html?utm_source=homescreen",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
   "background_color": "#007AFF",
@@ -79,21 +79,21 @@
       "name": "IBAN Ekle",
       "short_name": "Ekle",
       "description": "Yeni IBAN hesabı ekle",
-      "url": "/index.html?action=add",
+      "url": "./index.html?action=add",
       "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }]
     },
     {
       "name": "Favoriler",
       "short_name": "Favoriler",
       "description": "Favori IBAN hesaplarına git",
-      "url": "/index.html?tab=favs",
+      "url": "./index.html?tab=favs",
       "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }]
     },
     {
       "name": "Kişiler",
       "short_name": "Kişiler",
       "description": "Kayıtlı kişileri görüntüle",
-      "url": "/index.html?tab=contacts",
+      "url": "./index.html?tab=contacts",
       "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }]
     }
   ],
